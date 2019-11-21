@@ -61,25 +61,65 @@ app.getPlayerSearch = () => {
 $("#test").on("click", function() {
     app.getPlayerSelectValue();
 
-    // console.log("test", app.fantasyTeam);
     $("#playerSearchSelect").html(`<option value="players">choose a player:</option>`);
 
     app.displayTeam();
-
 })
 
 $("#demo").on("click", function() {
-
     app.fantasyTeam = app.demoTeam;
-
     app.displayTeam();
-
 })
+
+app.getNextGame = (teamID) => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const day = today.getDate().toString();
+    if (day.length < 2) {
+        day = "0" + day;
+    }
+
+    const dateReformat = `${year}-${month}-${day}T00:00:00.000Z`
+
+    const nextGamePromise = app.getBDIData(`games?team_ids[]=${teamID}&seasons[]=2019`);
+
+    let dateArray = [];
+
+    nextGamePromise.then(teamData => {
+        console.log("teamdata", teamData.data)
+        teamData.data.forEach(game => {
+            dateArray.push(game.date);
+        })
+        dateArray.sort();
+
+        dateArray = dateArray.filter(game => {
+            const gameSplit = game.split("T");
+            const reformatSplit = dateReformat.split("T");
+
+            return gameSplit[0] > reformatSplit[0];
+        });
+
+        const nextGame = teamData.data.find(game => {
+            return game.date === dateArray[0];
+        })
+
+        if (nextGame.home_team.id === teamID) {
+            console.log("next opponent", nextGame.visitor_team.full_name)
+        } else {
+            console.log("next opponent", nextGame.home_team.full_name)
+        }
+    });
+}
+
+
+
 
 app.getPlayerComparison = function(){
     $('#playerComparison').removeClass('hidden');
     let playerOneBio;
     let playerID = $(this).val();
+
     let playerOneData = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${playerID}&postseason=false&per_page=100`)
     
     playerOneData.then(playerData => {
@@ -95,6 +135,8 @@ app.getPlayerComparison = function(){
             <p>weight: ${playerOneBio.weight_pounds}lbs</p>
             </div>
         `)
+
+        app.getNextGame(playerOneBio.team_id);
     });
 };
 
