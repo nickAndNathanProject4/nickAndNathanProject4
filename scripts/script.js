@@ -76,6 +76,28 @@ $("#demo").on("click", function() {
 
 })
 
+app.getPlayerComparison = function(){
+    $('#playerComparison').removeClass('hidden');
+    let playerOneBio;
+    let playerID = $(this).val();
+    let playerOneData = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${playerID}&postseason=false&per_page=100`)
+    
+    playerOneData.then(playerData => {
+        playerOneBio = playerData.data[0].player;
+        console.log(playerOneBio);
+        const headshotURL = `https://nba-players.herokuapp.com/players/${playerOneBio.last_name}/${playerOneBio.first_name}`
+        $('#playerComparison #playerOne').append(`
+            <div>
+            <img src="${headshotURL}" alt="Photo of ${playerOneBio.first_name} ${playerOneBio.last_name}">
+            <p>${playerOneBio.first_name} ${playerOneBio.last_name}</p>
+            <p>position: ${playerOneBio.position}</p>
+            <p>height: ${playerOneBio.height_feet}' ${playerOneBio.height_inches}"</p>
+            <p>weight: ${playerOneBio.weight_pounds}lbs</p>
+            </div>
+        `)
+    });
+};
+
 app.getPlayerSelectValue = () => {
     const selection = $("option:selected").val();
     // console.log("player id", selection);
@@ -85,6 +107,7 @@ app.getPlayerSelectValue = () => {
 
 };
 
+let playerBio;
 app.displayTeam = () => {
     $("#teamGallery ul").empty();
 
@@ -94,30 +117,32 @@ app.displayTeam = () => {
 
         player2019Stats.then((playerStats) => {
             // console.log("chosenPlayer2019Stats", playerStats)
-            console.log("chosenPlayer2019Stats.data", playerStats.data)
-
+            // console.log("chosenPlayer2019Stats.data", playerStats.data)
+            
             const playerStatsArray = playerStats.data
-            let playerBio;
+            // let playerBio;
             if (playerStatsArray.length === 0) {
                 alert("Oh no, stats aren't available for that player. Please choose another baller!")
             } else {
                 playerBio = playerStatsArray[0].player
-                console.log("player bio", playerBio)
+
+                // console.log("player bio", playerBio)
             }
 
             const headshotURL = `https://nba-players.herokuapp.com/players/${playerBio.last_name}/${playerBio.first_name}`
 
             $("#teamGallery ul").append(`
-            <li>
+            <li value=${playerBio.id}>
             <img src="${headshotURL}" alt="Photo of ${playerBio.first_name} ${playerBio.last_name}">
             <p>${playerBio.first_name} ${playerBio.last_name}</p>
             <p>position: ${playerBio.position}</p>
             <p>height: ${playerBio.height_feet}' ${playerBio.height_inches}"</p>
             <p>weight: ${playerBio.weight_pounds}lbs</p>
             </li>
-            `)
+            `);
         })
     });
+    $('#teamGallery ul').on('click', 'li', app.getPlayerComparison);
 };
 
 
