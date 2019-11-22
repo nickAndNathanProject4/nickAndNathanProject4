@@ -104,14 +104,57 @@ app.getNextGame = (teamID) => {
             return game.date === dateArray[0];
         })
 
+        console.log("next game", nextGame);
+        let opponentTeamID;
+
         if (nextGame.home_team.id === teamID) {
             console.log("next opponent", nextGame.visitor_team.full_name)
+            opponentTeamID = nextGame.visitor_team.id;
         } else {
             console.log("next opponent", nextGame.home_team.full_name)
+            opponentTeamID = nextGame.home_team.id;
         }
+
+        console.log("opponent team id", opponentTeamID);
+
+
+
+
+    
     });
 }
 
+app.opponentPlayers = [];
+app.currentOpponentPlayers = [];
+
+app.getAllPlayers = async (num) => {
+    const allPlayers = await app.getBDIData(`players?page=${num}&per_page=100`);
+    app.filteredOpponentPlayers = allPlayers.data.filter((player) => {
+        // console.log("player", player);
+        return player.team.id == 28;
+    });
+    app.opponentPlayers = app.opponentPlayers.concat(app.filteredOpponentPlayers);
+    console.log("all raps", app.opponentPlayers);
+
+};
+
+
+app.playerPagination = () => {
+    for (let i = 0; i <= 33; i++) {
+        app.getAllPlayers(i);
+    };
+};
+
+
+app.opponentPlayerStats = (playerID) => {
+    const playerStats = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${playerID}&postseason=false`)
+}
+
+app.opponentPlayers.forEach(player => {
+    // app.opponentPlayerStats(player.id);
+    console.log("current opponent stat", app.opponentPlayerStats(player.id))
+    
+})
 
 
 
@@ -213,6 +256,8 @@ app.init = () => {
     //     console.log("api test allstats", allStats);
     // })
     app.getPlayerSearch();
+    // app.getAllPlayers();
+    app.playerPagination();
 };
 // =============================================================
 
