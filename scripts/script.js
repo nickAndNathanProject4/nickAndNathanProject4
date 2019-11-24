@@ -4,7 +4,9 @@ const app = {};
 
 
 // GLOBAL VARIABLES=============================================
-app.baseURI = "https://www.balldontlie.io/api/v1";
+app.baseBDIURI = "https://www.balldontlie.io/api/v1";
+app.baseSDIOURI = "https://api.sportsdata.io/v3/nba";
+app.keySDIO = "b89d8f35286d40bea76016a8d3b5a9cd";
 
 const $playerSearchForm = $("#playerSearchForm");
 const $playerSearchSelect = $("#playerSearchSelect");
@@ -22,6 +24,39 @@ app.demoTeam = [
     "367",
     "228"
 ];
+
+app.teamAbbrevID = {
+    1: "ATL",
+    2: "BOS",
+    3: "BKN",
+    4: "CHA",
+    5: "CHI",
+    6: "CLE",
+    7: "DAL",
+    8: "DEN",
+    9: "DET",
+    10: "GSW",
+    11: "HOU",
+    12: "IND",
+    13: "LAC",
+    14: "LAL",
+    15: "MEM",
+    16: "MIA",
+    17: "MIL",
+    18: "MIN",
+    19: "NOP",
+    20: "NYK",
+    21: "OKC",
+    22: "ORL",
+    23: "PHI",
+    24: "PHX",
+    25: "POR",
+    26: "SAC",
+    27: "SAS",
+    28: "TOR",
+    29: "UTA",
+    30: "WAS"
+};
 // =============================================================
 
 app.getPlayerSearch = () => {
@@ -87,6 +122,11 @@ $("#dashboard").on("click", function() {
 })
 // ===================================================================
 
+let opponentTeamID;
+let sdioOpponentPlayers;
+app.opponentPlayers = [];
+app.currentOpponentPlayers = [];
+app.opponentPlayersPositionMatch = [];
 
 app.getNextGame = (teamID) => {
     const today = new Date();
@@ -104,7 +144,7 @@ app.getNextGame = (teamID) => {
     let dateArray = [];
 
     nextGamePromise.then(teamData => {
-        console.log("teamdata", teamData.data)
+        // console.log("teamdata", teamData.data)
         teamData.data.forEach(game => {
             dateArray.push(game.date);
         })
@@ -121,83 +161,237 @@ app.getNextGame = (teamID) => {
             return game.date === dateArray[0];
         })
 
-        console.log("next game", nextGame);
-        let opponentTeamID;
+        // console.log("next game", nextGame);
+        // let opponentTeamID;
 
         if (nextGame.home_team.id === teamID) {
-            console.log("next opponent", nextGame.visitor_team.full_name)
+            // console.log("next opponent", nextGame.visitor_team.full_name)
+
             opponentTeamID = nextGame.visitor_team.id;
+            sdioOpponentPlayers = `stats/json/Players/${nextGame.visitor_team.abbreviation}`
         } else {
-            console.log("next opponent", nextGame.home_team.full_name)
+            // console.log("next opponent", nextGame.home_team.full_name)
+
             opponentTeamID = nextGame.home_team.id;
+            sdioOpponentPlayers = `stats/json/Players/${nextGame.home_team.abbreviation}`
         }
 
-        console.log("opponent team id", opponentTeamID);
+        // console.log("opponent team id", opponentTeamID);
+        
+        // app.playerPagination();
+
+
+
+        
+
+        const sdioReturn = app.getSDIOData(sdioOpponentPlayers);
+        sdioReturn.then((result) => {
+            console.log("array of opponent players", result)
+            // NOTE i get back an array of player objects
+
+            app.currentOpponentPlayers = result;
+
+            app.opponentPlayersPositionMatch = app.currentOpponentPlayers.filter((playerObject) => {
+                return playerObject["Position"] == playerOneSeasonStats[0]["Position"]
+            })
+            console.log("array of opponent players with match pos", app.opponentPlayersPositionMatch);
+
+            if (app.opponentPlayersPositionMatch.length > 1) {
+                app.opponentPlayersPositionMatch.sort((a, b) => (a.DepthChartOrder > b.DepthChartOrder) ? 1 : -1)
+            };
+
+
+            const playerTwoID = app.opponentPlayersPositionMatch[0].PlayerID;
+            console.log("player two id", playerTwoID);
+
+            const playerTwoSeasonStatsByID = `stats/json/PlayerSeasonStatsByPlayer/2020/${playerTwoID}`;
+
+
+
+            const headshotURL = `https://nba-players.herokuapp.com/players/${app.opponentPlayersPositionMatch[0].LastName}/${app.opponentPlayersPositionMatch[0].FirstName}`;
+
+            let playerTwoHeightFeet = ((app.opponentPlayersPositionMatch[0].Height) - (app.opponentPlayersPositionMatch[0].Height % 12)) / 12;
+            let playerTwoHeightInches = (app.opponentPlayersPositionMatch[0].Height % 12);
+
+            $('#playerComparison #playerTwo').append(`
+                <div>
+                <img src="${headshotURL}" alt="Photo of ${app.opponentPlayersPositionMatch[0].FirstName} ${app.opponentPlayersPositionMatch[0].LastName}">
+                <h4>${app.opponentPlayersPositionMatch[0].FirstName} ${app.opponentPlayersPositionMatch[0].LastName}</h4>
+                <div class="bio">
+                <p>position: ${app.opponentPlayersPositionMatch[0].Position}</p>
+                <p>height: ${playerTwoHeightFeet}' ${playerTwoHeightInches}"</p>
+                <p>weight: ${app.opponentPlayersPositionMatch[0].Weight}lbs</p>
+                </div>
+                </div>
+            `)
+
+            app.getSDIOData(playerTwoSeasonStatsByID).then((result) => {
+                // console.log("player season stats by team api result", result)
+                // console.log("player object result 0", result[0]["Name"])
+                // result.forEach((playerObject) => {
+                //     console.log("team players", playerObject["Name"])
+                // })
+
+                // playerTwoSeasonStats = result.filter((playerObject) => {
+                //     return playerObject["Name"] == playerOneFullName;
+                // })
+                // console.log("player one season stats", playerOneSeasonStats);
+                console.log("player two seasons stats api result", result);
+            })
+
+
+
+
+
+
+
+        //     let playerTwoData = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${playerID}&postseason=false&per_page=100`)
+
+        //     playerOneData.then(playerData => {
+        //         playerOneBio = playerData.data[0].player;
+        //         console.log("player one bio", playerOneBio);
+        //         const headshotURL = `https://nba-players.herokuapp.com/players/${playerOneBio.last_name}/${playerOneBio.first_name}`
+        //         $('#playerComparison #playerOne').append(`
+        //     <div>
+        //     <img src="${headshotURL}" alt="Photo of ${playerOneBio.first_name} ${playerOneBio.last_name}">
+        //     <h4>${playerOneBio.first_name} ${playerOneBio.last_name}</h4>
+        //     <div class="bio">
+        //     <p>position: ${playerOneBio.position}</p>
+        //     <p>height: ${playerOneBio.height_feet}' ${playerOneBio.height_inches}"</p>
+        //     <p>weight: ${playerOneBio.weight_pounds}lbs</p>
+        //     </div>
+        //     </div>
+        // `)
+        // });
 
 
 
 
     
     });
-}
-
-app.opponentPlayers = [];
-app.currentOpponentPlayers = [];
-
-app.getAllPlayers = async (num) => {
-    const allPlayers = await app.getBDIData(`players?page=${num}&per_page=100`);
-    app.filteredOpponentPlayers = allPlayers.data.filter((player) => {
-        // console.log("player", player);
-        return player.team.id == 28;
-    });
-    app.opponentPlayers = app.opponentPlayers.concat(app.filteredOpponentPlayers);
-    console.log("all raps", app.opponentPlayers);
-
-};
-
-
-app.playerPagination = () => {
-    for (let i = 0; i <= 33; i++) {
-        app.getAllPlayers(i);
-    };
-};
-
-
-app.opponentPlayerStats = (playerID) => {
-    const playerStats = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${playerID}&postseason=false`)
-}
-
-app.opponentPlayers.forEach(player => {
-    // app.opponentPlayerStats(player.id);
-    console.log("current opponent stat", app.opponentPlayerStats(player.id))
-    
 })
+
+}
+
+
+
+// app.playerPagination = () => {
+//     for (let i = 0; i <= 33; i++) {
+//         app.getAllPlayers(i);
+//     };
+//     // app.opponentPlayerStats();
+// };
+
+// app.getAllPlayers = async (num) => {
+//     const allPlayers = await app.getBDIData(`players?page=${num}&per_page=100`);
+
+//     app.filteredOpponentPlayers = allPlayers.data.filter((player) => {
+//         // console.log("player", player);
+//         return player.team.id == opponentTeamID;
+
+//     });
+//     app.opponentPlayers = app.opponentPlayers.concat(app.filteredOpponentPlayers);
+//     // console.log(`all id: ${opponentTeamID}opponents`, app.opponentPlayers);
+// };
+// console.log(`all id: ${opponentTeamID}opponents`, app.opponentPlayers);
+
+// app.opponentPlayerStats = () => {
+//     app.opponentPlayers.forEach(player => {
+//         // console.log("player from opponent stats func", player);
+
+//         const playerStats = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${player.id}&postseason=false`);
+
+//         // console.log("player stat api return", playerStats);
+
+//         playerStats.then((result) => {
+//             // console.log("player stat api return then", result)
+//             if (result.data.length !== 0) {
+//                 // console.log("player data after if", player.data)
+//                 app.currentOpponentPlayers.push(player);
+//             };
+
+//         })
+//         // console.log("current opponent players", app.currentOpponentPlayers)
+//     })
+// }
+
+// app.opponentPlayers.forEach(player => {
+//     // app.opponentPlayerStats(player.id);
+//     console.log("current opponent stat", app.opponentPlayerStats(player.id))
+
+    
+// });
+
+
 
 
 // PLAYER MATCHUP=======================================
+let playerOneBio;
+let playerTwoBio;
+let playerOneTeamAbbrev;
+let playerOneSeasonStats;
+let playerTwoSeasonStats;
+
 app.getPlayerComparison = function(){
     // $('#playerComparison').removeClass('visuallyhidden');
     $("#playerComparison").slideDown("slow");
-    let playerOneBio;
     let playerID = $(this).val();
 
     let playerOneData = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${playerID}&postseason=false&per_page=100`)
     
     playerOneData.then(playerData => {
         playerOneBio = playerData.data[0].player;
-        console.log(playerOneBio);
+        console.log("player one bio",playerOneBio);
         const headshotURL = `https://nba-players.herokuapp.com/players/${playerOneBio.last_name}/${playerOneBio.first_name}`
         $('#playerComparison #playerOne').append(`
             <div>
             <img src="${headshotURL}" alt="Photo of ${playerOneBio.first_name} ${playerOneBio.last_name}">
-            <p>${playerOneBio.first_name} ${playerOneBio.last_name}</p>
+            <h4>${playerOneBio.first_name} ${playerOneBio.last_name}</h4>
+            <div class="bio">
             <p>position: ${playerOneBio.position}</p>
             <p>height: ${playerOneBio.height_feet}' ${playerOneBio.height_inches}"</p>
             <p>weight: ${playerOneBio.weight_pounds}lbs</p>
             </div>
+            </div>
         `)
 
+        for (let item in app.teamAbbrevID) {
+            // console.log("item from for in", item)
+            // console.log("player one team id to string for in", playerOneBio.team_id.toString())
+
+            if (item == playerOneBio.team_id.toString()) {
+                // console.log("team abbrev id dot item", app.teamAbbrevID[item])
+                playerOneTeamAbbrev = app.teamAbbrevID[item];
+            }
+        }
+
+        const playerOneFullName = `${playerOneBio.first_name} ${playerOneBio.last_name}`;
+
+        // console.log("player one full name", playerOneFullName)
+
+        // console.log("player one team abbrev", playerOneTeamAbbrev);
+
+        const playerOneSeasonStatsByTeam = `stats/json/PlayerSeasonStatsByTeam/2020/${playerOneTeamAbbrev}`;
+
+        // console.log("player season stats by team string", playerSeasonStatsByTeam)
+
+        app.getSDIOData(playerOneSeasonStatsByTeam).then((result) => {
+            // console.log("player season stats by team api result", result)
+            // console.log("player object result 0", result[0]["Name"])
+            // result.forEach((playerObject) => {
+            //     console.log("team players", playerObject["Name"])
+            // })
+
+            playerOneSeasonStats = result.filter((playerObject) => {
+                return playerObject["Name"] == playerOneFullName;
+            })
+            console.log("player one season stats", playerOneSeasonStats);
+        });
+
+
         app.getNextGame(playerOneBio.team_id);
+
+
     });
 };
 // =========================================================
@@ -271,7 +465,7 @@ app.displayTeam = () => {
 // API CALLS====================================================
 app.getBDIData = (dataTypeBDI) => {
     return $.ajax({
-        url: `${app.baseURI}/${dataTypeBDI}`,
+        url: `${app.baseBDIURI}/${dataTypeBDI}`,
         method: "GET",
         dataType: "json",
         data: {
@@ -279,6 +473,25 @@ app.getBDIData = (dataTypeBDI) => {
         }
     })
 };
+
+app.getSDIOData = (dataTypeSDIO) => {
+    return $.ajax ({
+        url: `${app.baseSDIOURI}/${dataTypeSDIO}?key=${app.keySDIO}`,
+        // url: `${app.baseSDIOURI}/stats/json/Players/tor`,
+        method: "GET",
+        dataType: "json",
+        // key: `${app.keySDIO}`
+    })
+    // .then((result) => {
+    //     console.log("sdio result", result)
+    // })
+
+
+
+
+};
+
+// let sdiotorplayer = "stats/json/Players/tor";
 
 // =============================================================
 
@@ -288,7 +501,13 @@ app.getBDIData = (dataTypeBDI) => {
 app.init = () => {
     app.getPlayerSearch();
     // app.getAllPlayers();
-    app.playerPagination();
+    // app.playerPagination();
+
+    // app.getSDIOData(sdiotorplayer);
+
+    // sdio.then((result) => {
+    //     console.log("sdio then", result);
+    // });
 };
 // =============================================================
 

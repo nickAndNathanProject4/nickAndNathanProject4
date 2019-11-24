@@ -60,13 +60,20 @@ height: 80vh;
 //  object-fit: contain;
 }
 
-.galleryList .bio {
+.bio {
   background: #EEE;
   color: #393e46;
+  border-radius: 2.5%;
+}
+
+
+.galleryList .bio {
+  // background: #EEE;
+  // color: #393e46;
   width: 90%;
   height: 20%;
   margin: 0 5%;
-  border-radius: 2.5%;
+  // border-radius: 2.5%;
 }
 
 // .card {
@@ -119,9 +126,20 @@ height: 80vh;
 
 .comparisonContent {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
   grid-template-rows: 1fr;
   grid-column-gap: 20px;
   grid-row-gap: 20px;
   margin: 0 5%;
+}
+
+.playerOne, .playerTwo {
+  position: relative;
+}
+.comparisonContent div .bio {
+  position: absolute;
+  width: 30%;
+  top: 10%;
+  left: 60%;
+
 }

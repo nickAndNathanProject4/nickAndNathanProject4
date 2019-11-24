@@ -300,13 +300,16 @@ h1, p {
   max-width: 100%;
 }
 
-.galleryList .bio {
+.bio {
   background: #EEE;
   color: #393e46;
+  border-radius: 2.5%;
+}
+
+.galleryList .bio {
   width: 90%;
   height: 20%;
   margin: 0 5%;
-  border-radius: 2.5%;
 }
 
 .playerComparison {
@@ -323,11 +326,22 @@ h1, p {
 .comparisonContent {
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: (1fr)[2];
-      grid-template-columns: repeat(2, 1fr);
+  -ms-grid-columns: (minmax(440px, 1fr))[auto-fit];
+      grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
   -ms-grid-rows: 1fr;
       grid-template-rows: 1fr;
   grid-column-gap: 20px;
   grid-row-gap: 20px;
   margin: 0 5%;
+}
+
+.playerOne, .playerTwo {
+  position: relative;
+}
+
+.comparisonContent div .bio {
+  position: absolute;
+  width: 30%;
+  top: 10%;
+  left: 60%;
 }
