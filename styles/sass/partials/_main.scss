@@ -1,3 +1,127 @@
 .hidden {
   display: none;
 }
+
+body {
+  background: #393e46;
+  color: #f5eded;
+  font-size: 125%;
+}
+
+h1, p {
+  margin: 0;
+}
+
+.welcomeInstructions {
+  width: 100%;
+  height: 80vh;
+  background: #222831;
+  opacity: 0.95;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+}
+
+.instructionsContent {
+  opacity: 1;
+}
+
+// DASHBOARD CARD STYLING============================
+
+.galleryList {
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+grid-template-rows: repeat(2, 1fr);
+grid-column-gap: 20px;
+grid-row-gap: 20px;
+
+list-style-type: none;
+width: 100%;
+padding: 0;
+height: 80vh;
+}
+
+.card {
+  background: #222831;
+  border-radius: 2.5%;
+  padding: 5%;
+}
+
+.cardFront {
+  background-image: url("../assets/5a2afeef072316.0429945015127672150292.png");
+  background-repeat: none;
+  background-size: cover;
+}
+
+.galleryList img {
+ max-width: 100%;
+//  margin: 0 auto;
+//  object-fit: contain;
+}
+
+.galleryList .bio {
+  background: #EEE;
+  color: #393e46;
+  width: 90%;
+  height: 20%;
+  margin: 0 5%;
+  border-radius: 2.5%;
+}
+
+// .card {
+//     width:250px;
+//     height:250px;
+//     position: relative;
+//     // top: 50px;
+//     // left: 50px;
+//     perspective: 800px;  /*important for how "in yo face" the flip is. The lower the value, the closer you will view the transform" */
+//     /* transform-style: preserve-3d; */
+//   }
+
+//   .cardFront, .cardBack {
+//     /* some styling for each card */
+//     position: absolute;
+//     height:100%;
+//     width:100%;
+//     transition:all 0.5s;
+//     backface-visibility:hidden;  /*This means that when it is flipped over, we don't see the back */
+//   }
+
+//   .cardFront {
+//     background:#16a085; /* green */
+//     transform:rotateY(180deg);  /*By Default set the front to be rotate */
+//   }
+//   .cardBack {
+//     background:#f1c40f; /*orange */
+//   }
+
+//   .card:hover .cardBack {
+//     transform:rotateY(0);
+//   }
+
+//   .card:hover .cardFront {
+//     transform:rotateY(-180deg);
+//   }
+
+  // =============================================
+
+.playerComparison {
+  width: 100%;
+  height: 80vh;
+  background: #222831;
+  opacity: 0.95;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+}
+
+.comparisonContent {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr;
+  grid-column-gap: 20px;
+  grid-row-gap: 20px;
+  margin: 0 5%;
+}

@@ -10,6 +10,27 @@
 </head>
 
 <body>
+    <header>
+        <h1>swish</h1>
+
+    </header>
+
+    <section class="welcomeInstructions">
+        <div class="instructionsContent">
+            <h1>swish</h1>
+            <h2>welcome to swish! </h2>
+            <h3>your place for getting information on your fantasy player matchups</h3>
+            <p>Swish is an application which provides you the best information on upcoming matchups for your fantasy players and empowers you to make the winning choices!</p>
+            <ul>
+                <li>from the dashboard, search for your fantasy players and select your player from the search results</li>
+                <li>selected players will be added to your team and displayed on the dashboard</li>
+                <li>once you have entered players into your team, select any one of your players from the dashboard to be presented with the latests stats on their next upcoming opponent</li>
+            </ul>
+            <p>ready to start? either select begin to start building your own team or select demo to get a feel for Swish and what it can provide before you start</p>
+            <button id="begin">begin</button>
+            <button id="demo">demo</button>
+        </div>
+    </section>
 
     <fieldset>
         <legend>build your fantasy team</legend>
@@ -27,27 +48,30 @@
                 <option value="players">choose a player:</option>
             </select>
         </div>
-
+        
+        <button id="addPlayer">add player</button>
     </fieldset>
 
-    <button id="test">test</button>
-    <button id="demo">demo</button>
 
     <div id="teamGallery">
-        <ul>
+        <ul class="galleryList">
 
         </ul>
     </div>
 
-    <div id="playerComparison" class='hidden'>
+    <section id="playerComparison" class="playerComparison">
         <h2>player comparison page</h2>
-        <div id='playerOne'>
+        <div class="comparisonContent">
+            <div id='playerOne'>
+    
+            </div>
+            <div id='playerTwo'>
+    
+            </div>
 
         </div>
-        <div>
-
-        </div id='playerTwo'>
-    </div>
+        <button id="dashboard">back to dashboard</button>
+    </section>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"> </script>
     <script src="./scripts/script.js"></script>

@@ -58,18 +58,35 @@ app.getPlayerSearch = () => {
     })
 }
 
-$("#test").on("click", function() {
+// EVENT LISTENERS==================================================
+$("#addPlayer").on("click", function() {
     app.getPlayerSelectValue();
-
     $("#playerSearchSelect").html(`<option value="players">choose a player:</option>`);
-
     app.displayTeam();
 })
 
 $("#demo").on("click", function() {
+    $(".welcomeInstructions").toggleClass("visuallyhidden");
     app.fantasyTeam = app.demoTeam;
     app.displayTeam();
 })
+
+$("#begin").on("click", function() {
+    $(".welcomeInstructions").toggleClass("visuallyhidden");
+});
+
+$("#dashboard").on("click", function() {
+    // $("#playerComparison").toggleClass("visuallyhidden");
+    $("#playerComparison").slideUp("slow");
+    $(".comparisonContent").html(`
+        <div id='playerOne'>
+        </div>
+        <div id='playerTwo'>
+        </div>
+        `)
+})
+// ===================================================================
+
 
 app.getNextGame = (teamID) => {
     const today = new Date();
@@ -157,9 +174,10 @@ app.opponentPlayers.forEach(player => {
 })
 
 
-
+// PLAYER MATCHUP=======================================
 app.getPlayerComparison = function(){
-    $('#playerComparison').removeClass('hidden');
+    // $('#playerComparison').removeClass('visuallyhidden');
+    $("#playerComparison").slideDown("slow");
     let playerOneBio;
     let playerID = $(this).val();
 
@@ -182,7 +200,12 @@ app.getPlayerComparison = function(){
         app.getNextGame(playerOneBio.team_id);
     });
 };
+// =========================================================
 
+
+
+
+// SEARCH RESULT SELECTION==============================
 app.getPlayerSelectValue = () => {
     const selection = $("option:selected").val();
     // console.log("player id", selection);
@@ -191,7 +214,12 @@ app.getPlayerSelectValue = () => {
     // console.log("fantasyTeam array", app.fantasyTeam);
 
 };
+// =======================================================
 
+
+
+
+// DRAW PLAYER CARDS===================================
 let playerBio;
 app.displayTeam = () => {
     $("#teamGallery ul").empty();
@@ -216,19 +244,27 @@ app.displayTeam = () => {
 
             const headshotURL = `https://nba-players.herokuapp.com/players/${playerBio.last_name}/${playerBio.first_name}`
 
+            // <div class="cardBack">
+            // <img src="./assets/nba_logo_edit.jpg" alt="NBA logo">
+            // </div>
             $("#teamGallery ul").append(`
-            <li value=${playerBio.id}>
+            <li value=${playerBio.id} class="card">
+            <div class="cardFront">
             <img src="${headshotURL}" alt="Photo of ${playerBio.first_name} ${playerBio.last_name}">
+            <div class="bio">
             <p>${playerBio.first_name} ${playerBio.last_name}</p>
             <p>position: ${playerBio.position}</p>
             <p>height: ${playerBio.height_feet}' ${playerBio.height_inches}"</p>
             <p>weight: ${playerBio.weight_pounds}lbs</p>
+            </div>
+            </div>
             </li>
             `);
         })
     });
     $('#teamGallery ul').on('click', 'li', app.getPlayerComparison);
 };
+// =========================================
 
 
 
@@ -250,11 +286,6 @@ app.getBDIData = (dataTypeBDI) => {
 
 // INIT=========================================================
 app.init = () => {
-    // const apiTest = app.getBDIData(`stats?seasons[]=2018&postseason=false&per_page=100`);
-    // console.log("apiTest", apiTest);
-    // apiTest.then((allStats) => {
-    //     console.log("api test allstats", allStats);
-    // })
     app.getPlayerSearch();
     // app.getAllPlayers();
     app.playerPagination();
