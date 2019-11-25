@@ -139,13 +139,17 @@ $("#addPlayer").on("click", function() {
     app.getPlayerSelectValue();
     $("#playerSearchSelect").html(`<option value="players">choose a player:</option>`);
     app.displayTeam();
-})
+});
 
 $("#demo").on("click", function() {
     $(".welcomeInstructions").toggleClass("visuallyhidden");
     app.fantasyTeam = app.demoTeam;
     app.displayTeam();
-})
+});
+
+$("#helpIcon").on("click", function() {
+    $(".welcomeInstructions").toggleClass("visuallyhidden");
+});
 
 $("#begin").on("click", function() {
     $(".welcomeInstructions").toggleClass("visuallyhidden");
