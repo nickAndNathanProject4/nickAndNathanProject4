@@ -163,12 +163,12 @@ $("#dashboard").on("click", function() {
     // $("#playerComparison").toggleClass("visuallyhidden");
     $("#playerComparison").slideUp("slow");
     $(".comparisonContent").html(`
-        <div class="scrollLeft"></div>
+        <div class="scrollLeft"><i class="fas fa-chevron-left"></i></div>
         <div id='playerOne' class="playerOne">
         </div>
         <div id='playerTwo' class="playerTwo">
         </div>
-        <div class="scrollRight"></div>
+        <div class="scrollRight"><i class="fas fa-chevron-right"></i></div>
         `)
 })
 // ===================================================================
@@ -249,7 +249,7 @@ app.getNextGame = (teamID) => {
             app.currentOpponentPlayers = result;
 
             app.opponentPlayersPositionMatch = app.currentOpponentPlayers.filter((playerObject) => {
-                return (playerObject["Position"] == playerOneSeasonStats[0]["Position"] && playerObject["DepthChartOrder"] !== null);
+                return (playerObject["Position"] == playerOneSeasonStats["Position"] && playerObject["DepthChartOrder"] !== null);
             });
 
             // console.log("array of opponent players with match pos", app.opponentPlayersPositionMatch);
@@ -316,7 +316,7 @@ app.getPlayerComparison = function(){
     
     playerOneData.then(playerData => {
         playerOneBio = playerData.data[0].player;
-        console.log("player one bio",playerOneBio);
+        // console.log("player one bio",playerOneBio);
         const headshotURL = `https://nba-players.herokuapp.com/players/${playerOneBio.last_name}/${playerOneBio.first_name}`
         $('#playerComparison #playerOne').append(`
             <div class="imageContainer">
@@ -355,7 +355,8 @@ app.getPlayerComparison = function(){
             playerOneSeasonStats = result.filter((playerObject) => {
                 return playerObject["Name"] == playerOneFullName;
             })
-            // console.log("player one season stats", playerOneSeasonStats);
+            playerOneSeasonStats = playerOneSeasonStats[0];
+            console.log("player one season stats", playerOneSeasonStats);
         });
 
         app.getNextGame(playerOneBio.team_id);
@@ -385,7 +386,7 @@ let playerBio;
 let listTracker=1;
 app.displayTeam = () => {
     $("#teamGallery ul").empty();
-    console.log("fantasy team array", app.fantasyTeam);
+    // console.log("fantasy team array", app.fantasyTeam);
     app.fantasyTeam.forEach((player) => {
 
         const player2019Stats = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${player}&postseason=false&per_page=100`)

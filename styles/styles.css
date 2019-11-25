@@ -364,6 +364,11 @@ fieldset {
   display: none;
 }
 
+.playerComparison h2 {
+  text-transform: capitalize;
+  text-align: center;
+}
+
 .comparisonContent {
   display: -ms-grid;
   display: grid;
@@ -378,6 +383,10 @@ fieldset {
 
 .playerOne, .playerTwo {
   position: relative;
+}
+
+.comparisonContent h4 {
+  text-align: center;
 }
 
 .comparisonContent div .bio {
@@ -395,6 +404,7 @@ fieldset {
 .imageContainer {
   width: 350px;
   height: 254px;
+  margin: 0 auto;
 }
 
 .scrollLeft, .scrollRight {
