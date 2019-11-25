@@ -292,6 +292,7 @@ app.getNextGame = (teamID) => {
 
 
 // PLAYER MATCHUP=======================================
+let playerID;
 let playerOneBio;
 let playerTwoBio;
 let playerOneTeamAbbrev;
@@ -301,7 +302,7 @@ let playerTwoSeasonStats;
 app.getPlayerComparison = function(){
     // $('#playerComparison').removeClass('visuallyhidden');
     $("#playerComparison").slideDown("slow");
-    let playerID = $(this).val();
+    playerID = $(this).val();
 
     let playerOneData = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${playerID}&postseason=false&per_page=100`)
     
@@ -370,9 +371,10 @@ app.getPlayerSelectValue = () => {
 
 // DRAW PLAYER CARDS===================================
 let playerBio;
+let listTracker=1;
 app.displayTeam = () => {
     $("#teamGallery ul").empty();
-
+    console.log("fantasy team array", app.fantasyTeam);
     app.fantasyTeam.forEach((player) => {
 
         const player2019Stats = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${player}&postseason=false&per_page=100`)
@@ -397,7 +399,7 @@ app.displayTeam = () => {
             // <img src="./assets/nba_logo_edit.jpg" alt="NBA logo">
             // </div>
             $("#teamGallery ul").append(`
-            <li value=${playerBio.id} class="card">
+            <li value=${playerBio.id} class="card" listTrack=${listTracker}>
             <div class="cardFront">
             <img src="${headshotURL}" alt="Photo of ${playerBio.first_name} ${playerBio.last_name}">
             <div class="bio">
@@ -409,7 +411,8 @@ app.displayTeam = () => {
             </div>
             </li>
             `);
-        })
+            listTracker++;
+        });
     });
     $('#teamGallery ul').on('click', 'li', app.getPlayerComparison);
 };
