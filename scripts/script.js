@@ -35,7 +35,7 @@ app.teamAbbrevID = {
     7: "DAL",
     8: "DEN",
     9: "DET",
-    10: "GSW",
+    10: "GSW", 
     11: "HOU",
     12: "IND",
     13: "LAC",
@@ -53,6 +53,47 @@ app.teamAbbrevID = {
     25: "POR",
     26: "SAC",
     27: "SAS",
+    28: "TOR",
+    29: "UTA",
+    30: "WAS"
+};
+
+app.teamAbbrevIDCheck = {
+    10: "GSW",
+    19: "NOP",
+    20: "NYK",
+    23: "PHI",
+    27: "SAS"
+};
+
+app.teamAbbrevIDRefactor = {
+    1: "ATL",
+    2: "BOS",
+    3: "BKN",
+    4: "CHA",
+    5: "CHI",
+    6: "CLE",
+    7: "DAL",
+    8: "DEN",
+    9: "DET",
+    10: "GS",
+    11: "HOU",
+    12: "IND",
+    13: "LAC",
+    14: "LAL",
+    15: "MEM",
+    16: "MIA",
+    17: "MIL",
+    18: "MIN",
+    19: "NO",
+    20: "NY",
+    21: "OKC",
+    22: "ORL",
+    23: "PHO",
+    24: "PHX",
+    25: "POR",
+    26: "SAC",
+    27: "SA",
     28: "TOR",
     29: "UTA",
     30: "WAS"
@@ -114,10 +155,12 @@ $("#dashboard").on("click", function() {
     // $("#playerComparison").toggleClass("visuallyhidden");
     $("#playerComparison").slideUp("slow");
     $(".comparisonContent").html(`
-        <div id='playerOne'>
+        <div class="scrollLeft"></div>
+        <div id='playerOne' class="playerOne">
         </div>
-        <div id='playerTwo'>
+        <div id='playerTwo' class="playerTwo">
         </div>
+        <div class="scrollRight"></div>
         `)
 })
 // ===================================================================
@@ -164,49 +207,53 @@ app.getNextGame = (teamID) => {
         // console.log("next game", nextGame);
         // let opponentTeamID;
 
+        // console.log("player team id", teamID);
+
         if (nextGame.home_team.id === teamID) {
-            // console.log("next opponent", nextGame.visitor_team.full_name)
+            let abbrevKeys = Object.keys(app.teamAbbrevIDCheck);
+            // console.log("abbrev keys", abbrevKeys);
+            // console.log("visitor team id", nextGame.visitor_team.id);
 
-            opponentTeamID = nextGame.visitor_team.id;
-            sdioOpponentPlayers = `stats/json/Players/${nextGame.visitor_team.abbreviation}`
+            if (abbrevKeys.indexOf(nextGame.visitor_team.id.toString()) == -1) {
+                sdioOpponentPlayers = `stats/json/Players/${nextGame.visitor_team.abbreviation}`;
+            } else {
+                sdioOpponentPlayers = `stats/json/Players/${app.teamAbbrevIDRefactor[nextGame.visitor_team.id]}`;
+            }
         } else {
-            // console.log("next opponent", nextGame.home_team.full_name)
-
-            opponentTeamID = nextGame.home_team.id;
-            sdioOpponentPlayers = `stats/json/Players/${nextGame.home_team.abbreviation}`
+            let abbrevKeys = Object.keys(app.teamAbbrevIDCheck);
+            // console.log("abbrev keys", abbrevKeys);
+            // console.log("home team id", nextGame.home_team.id);
+            if (abbrevKeys.indexOf(nextGame.home_team.id.toString()) == -1) {
+                sdioOpponentPlayers = `stats/json/Players/${nextGame.home_team.abbreviation}`;
+            } else {
+                // console.log("refactor")
+                sdioOpponentPlayers = `stats/json/Players/${app.teamAbbrevIDRefactor[nextGame.home_team.id]}`;
+            }
         }
 
         // console.log("opponent team id", opponentTeamID);
-        
-        // app.playerPagination();
-
-
-
-        
+        // console.log("sdio opponent", sdioOpponentPlayers);
 
         const sdioReturn = app.getSDIOData(sdioOpponentPlayers);
         sdioReturn.then((result) => {
-            console.log("array of opponent players", result)
-            // NOTE i get back an array of player objects
+            // console.log("array of opponent players", result)
 
             app.currentOpponentPlayers = result;
 
             app.opponentPlayersPositionMatch = app.currentOpponentPlayers.filter((playerObject) => {
-                return playerObject["Position"] == playerOneSeasonStats[0]["Position"]
-            })
-            console.log("array of opponent players with match pos", app.opponentPlayersPositionMatch);
+                return (playerObject["Position"] == playerOneSeasonStats[0]["Position"] && playerObject["DepthChartOrder"] !== null);
+            });
+
+            // console.log("array of opponent players with match pos", app.opponentPlayersPositionMatch);
 
             if (app.opponentPlayersPositionMatch.length > 1) {
                 app.opponentPlayersPositionMatch.sort((a, b) => (a.DepthChartOrder > b.DepthChartOrder) ? 1 : -1)
             };
 
-
             const playerTwoID = app.opponentPlayersPositionMatch[0].PlayerID;
-            console.log("player two id", playerTwoID);
+            // console.log("player two id", playerTwoID);
 
             const playerTwoSeasonStatsByID = `stats/json/PlayerSeasonStatsByPlayer/2020/${playerTwoID}`;
-
-
 
             const headshotURL = `https://nba-players.herokuapp.com/players/${app.opponentPlayersPositionMatch[0].LastName}/${app.opponentPlayersPositionMatch[0].FirstName}`;
 
@@ -214,14 +261,14 @@ app.getNextGame = (teamID) => {
             let playerTwoHeightInches = (app.opponentPlayersPositionMatch[0].Height % 12);
 
             $('#playerComparison #playerTwo').append(`
-                <div>
-                <img src="${headshotURL}" alt="Photo of ${app.opponentPlayersPositionMatch[0].FirstName} ${app.opponentPlayersPositionMatch[0].LastName}">
+                <div class="imageContainer">
+                <img src="${headshotURL}" alt="Photo of ${app.opponentPlayersPositionMatch[0].FirstName} ${app.opponentPlayersPositionMatch[0].LastName}" onerror="this.onerror=null;this.src='./assets/blank_headshot_silhouette.png';">
+                </div>
                 <h4>${app.opponentPlayersPositionMatch[0].FirstName} ${app.opponentPlayersPositionMatch[0].LastName}</h4>
                 <div class="bio">
                 <p>position: ${app.opponentPlayersPositionMatch[0].Position}</p>
                 <p>height: ${playerTwoHeightFeet}' ${playerTwoHeightInches}"</p>
                 <p>weight: ${app.opponentPlayersPositionMatch[0].Weight}lbs</p>
-                </div>
                 </div>
             `)
 
@@ -238,90 +285,9 @@ app.getNextGame = (teamID) => {
                 // console.log("player one season stats", playerOneSeasonStats);
                 console.log("player two seasons stats api result", result);
             })
-
-
-
-
-
-
-
-        //     let playerTwoData = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${playerID}&postseason=false&per_page=100`)
-
-        //     playerOneData.then(playerData => {
-        //         playerOneBio = playerData.data[0].player;
-        //         console.log("player one bio", playerOneBio);
-        //         const headshotURL = `https://nba-players.herokuapp.com/players/${playerOneBio.last_name}/${playerOneBio.first_name}`
-        //         $('#playerComparison #playerOne').append(`
-        //     <div>
-        //     <img src="${headshotURL}" alt="Photo of ${playerOneBio.first_name} ${playerOneBio.last_name}">
-        //     <h4>${playerOneBio.first_name} ${playerOneBio.last_name}</h4>
-        //     <div class="bio">
-        //     <p>position: ${playerOneBio.position}</p>
-        //     <p>height: ${playerOneBio.height_feet}' ${playerOneBio.height_inches}"</p>
-        //     <p>weight: ${playerOneBio.weight_pounds}lbs</p>
-        //     </div>
-        //     </div>
-        // `)
-        // });
-
-
-
-
-    
+        });
     });
-})
-
-}
-
-
-
-// app.playerPagination = () => {
-//     for (let i = 0; i <= 33; i++) {
-//         app.getAllPlayers(i);
-//     };
-//     // app.opponentPlayerStats();
-// };
-
-// app.getAllPlayers = async (num) => {
-//     const allPlayers = await app.getBDIData(`players?page=${num}&per_page=100`);
-
-//     app.filteredOpponentPlayers = allPlayers.data.filter((player) => {
-//         // console.log("player", player);
-//         return player.team.id == opponentTeamID;
-
-//     });
-//     app.opponentPlayers = app.opponentPlayers.concat(app.filteredOpponentPlayers);
-//     // console.log(`all id: ${opponentTeamID}opponents`, app.opponentPlayers);
-// };
-// console.log(`all id: ${opponentTeamID}opponents`, app.opponentPlayers);
-
-// app.opponentPlayerStats = () => {
-//     app.opponentPlayers.forEach(player => {
-//         // console.log("player from opponent stats func", player);
-
-//         const playerStats = app.getBDIData(`stats?seasons[]=2019&player_ids[]=${player.id}&postseason=false`);
-
-//         // console.log("player stat api return", playerStats);
-
-//         playerStats.then((result) => {
-//             // console.log("player stat api return then", result)
-//             if (result.data.length !== 0) {
-//                 // console.log("player data after if", player.data)
-//                 app.currentOpponentPlayers.push(player);
-//             };
-
-//         })
-//         // console.log("current opponent players", app.currentOpponentPlayers)
-//     })
-// }
-
-// app.opponentPlayers.forEach(player => {
-//     // app.opponentPlayerStats(player.id);
-//     console.log("current opponent stat", app.opponentPlayerStats(player.id))
-
-    
-// });
-
+};
 
 
 
@@ -344,54 +310,43 @@ app.getPlayerComparison = function(){
         console.log("player one bio",playerOneBio);
         const headshotURL = `https://nba-players.herokuapp.com/players/${playerOneBio.last_name}/${playerOneBio.first_name}`
         $('#playerComparison #playerOne').append(`
-            <div>
+            <div class="imageContainer">
             <img src="${headshotURL}" alt="Photo of ${playerOneBio.first_name} ${playerOneBio.last_name}">
+            </div>
             <h4>${playerOneBio.first_name} ${playerOneBio.last_name}</h4>
             <div class="bio">
             <p>position: ${playerOneBio.position}</p>
             <p>height: ${playerOneBio.height_feet}' ${playerOneBio.height_inches}"</p>
             <p>weight: ${playerOneBio.weight_pounds}lbs</p>
             </div>
-            </div>
         `)
-
-        for (let item in app.teamAbbrevID) {
-            // console.log("item from for in", item)
-            // console.log("player one team id to string for in", playerOneBio.team_id.toString())
-
-            if (item == playerOneBio.team_id.toString()) {
-                // console.log("team abbrev id dot item", app.teamAbbrevID[item])
-                playerOneTeamAbbrev = app.teamAbbrevID[item];
-            }
-        }
 
         const playerOneFullName = `${playerOneBio.first_name} ${playerOneBio.last_name}`;
 
-        // console.log("player one full name", playerOneFullName)
+        let abbrevKeys = Object.keys(app.teamAbbrevIDCheck);
+        if (abbrevKeys.indexOf(playerOneBio.team_id.toString()) == -1) {
+            playerOneTeamAbbrev = app.teamAbbrevID[playerOneBio.team_id.toString()];
+        } else {
+            playerOneTeamAbbrev = app.teamAbbrevIDRefactor[playerOneBio.team_id.toString()]
+            // playerOneTeamAbbrev = app.teamAbbrevIDCheck[]
+        }
 
+        // console.log("player one team abbrev", playerOneTeamAbbrev);
+        // console.log("player one full name", playerOneFullName)
         // console.log("player one team abbrev", playerOneTeamAbbrev);
 
         const playerOneSeasonStatsByTeam = `stats/json/PlayerSeasonStatsByTeam/2020/${playerOneTeamAbbrev}`;
 
-        // console.log("player season stats by team string", playerSeasonStatsByTeam)
+        // console.log("player season stats by team string", playerOneSeasonStatsByTeam)
 
         app.getSDIOData(playerOneSeasonStatsByTeam).then((result) => {
-            // console.log("player season stats by team api result", result)
-            // console.log("player object result 0", result[0]["Name"])
-            // result.forEach((playerObject) => {
-            //     console.log("team players", playerObject["Name"])
-            // })
-
             playerOneSeasonStats = result.filter((playerObject) => {
                 return playerObject["Name"] == playerOneFullName;
             })
             console.log("player one season stats", playerOneSeasonStats);
         });
 
-
         app.getNextGame(playerOneBio.team_id);
-
-
     });
 };
 // =========================================================
