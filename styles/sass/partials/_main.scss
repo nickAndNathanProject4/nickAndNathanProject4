@@ -6,10 +6,19 @@ body {
   background: #393e46;
   color: #f5eded;
   font-size: 125%;
+  // font-family: 'Special Elite', cursive;
+  // font-family: 'Kanit', sans-serif;
+  font-family: 'Baskervville', serif;
 }
 
 h1, p {
   margin: 0;
+}
+
+h1 {
+  font-family: 'Special Elite', cursive;
+  letter-spacing: 2px;
+  font-size: 4rem;
 }
 
 .welcomeInstructions {
@@ -20,11 +29,41 @@ h1, p {
   position: absolute;
   top: 0;
   left: 0;
-
+  border-radius: 2.5%;
 }
 
 .instructionsContent {
   opacity: 1;
+  position: relative;
+}
+
+.closeHelp {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 1.75rem;
+}
+
+
+
+
+fieldset {
+  position: relative;
+}
+
+.helpIcon {
+  position: absolute;
+  top: 0;
+  right: 15px;
+  // width: 25px;
+  // height: 25px;
+  font-size: 1.75rem;
+}
+
+.helpIcon i {
+  // margin: auto;
+  // width: 100%;
+  // font-size: 1.75rem;
 }
 
 // DASHBOARD CARD STYLING============================

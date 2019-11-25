@@ -147,6 +147,10 @@ $("#demo").on("click", function() {
     app.displayTeam();
 });
 
+$("#closeHelp").on("click", function() {
+    $(".welcomeInstructions").toggleClass("visuallyhidden");
+});
+
 $("#helpIcon").on("click", function() {
     $(".welcomeInstructions").toggleClass("visuallyhidden");
 });
@@ -201,7 +205,7 @@ app.getNextGame = (teamID) => {
             const gameSplit = game.split("T");
             const reformatSplit = dateReformat.split("T");
 
-            return gameSplit[0] > reformatSplit[0];
+            return gameSplit[0] >= reformatSplit[0];
         });
 
         const nextGame = teamData.data.find(game => {
