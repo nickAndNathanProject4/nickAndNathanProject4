@@ -62,7 +62,7 @@ app.teamAbbrevIDCheck = {
     10: "GSW",
     19: "NOP",
     20: "NYK",
-    23: "PHI",
+    24: "PHX",
     27: "SAS"
 };
 
@@ -89,8 +89,8 @@ app.teamAbbrevIDRefactor = {
     20: "NY",
     21: "OKC",
     22: "ORL",
-    23: "PHO",
-    24: "PHX",
+    23: "PHI",
+    24: "PHO",
     25: "POR",
     26: "SAC",
     27: "SA",
@@ -324,6 +324,8 @@ app.getPlayerComparison = function(){
 
         const playerOneFullName = `${playerOneBio.first_name} ${playerOneBio.last_name}`;
 
+        // console.log("player one team id", playerOneBio.team_id)
+
         let abbrevKeys = Object.keys(app.teamAbbrevIDCheck);
         if (abbrevKeys.indexOf(playerOneBio.team_id.toString()) == -1) {
             playerOneTeamAbbrev = app.teamAbbrevID[playerOneBio.team_id.toString()];
@@ -341,10 +343,11 @@ app.getPlayerComparison = function(){
         // console.log("player season stats by team string", playerOneSeasonStatsByTeam)
 
         app.getSDIOData(playerOneSeasonStatsByTeam).then((result) => {
+            // console.log("player one season stat api return", result)
             playerOneSeasonStats = result.filter((playerObject) => {
                 return playerObject["Name"] == playerOneFullName;
             })
-            console.log("player one season stats", playerOneSeasonStats);
+            // console.log("player one season stats", playerOneSeasonStats);
         });
 
         app.getNextGame(playerOneBio.team_id);
