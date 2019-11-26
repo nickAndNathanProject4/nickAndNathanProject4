@@ -365,7 +365,7 @@ app.getPlayerComparison = function(){
 
             $('#comparisonStats .playerOneStats').append(`
             <ul>
-            <li>${}</li>
+            <li></li>
             <li></li>
             <li></li>
             <li></li>
