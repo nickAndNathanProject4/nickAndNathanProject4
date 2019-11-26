@@ -392,7 +392,7 @@ app.seasonStatsAverages = (statType, games) => {
     return (statType / games)
 };
 
-app.statsKey = 
+app.statsKey = ["Games", "Points", "Rebounds", "Assists", "Steals", "BlockedShots"];
 
 
 // SEARCH RESULT SELECTION==============================
