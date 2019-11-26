@@ -369,6 +369,11 @@ fieldset {
   text-align: center;
 }
 
+.playerComparison button {
+  display: block;
+  margin: 0 auto;
+}
+
 .comparisonContent {
   display: -ms-grid;
   display: grid;
@@ -376,8 +381,6 @@ fieldset {
       grid-template-columns: 50px repeat(2, 1fr) 50px;
   -ms-grid-rows: 1fr;
       grid-template-rows: 1fr;
-  grid-column-gap: 20px;
-  grid-row-gap: 20px;
   margin: 0 5%;
 }
 
@@ -387,13 +390,22 @@ fieldset {
 
 .comparisonContent h4 {
   text-align: center;
+  margin: 0;
+  margin-top: 15px;
 }
 
 .comparisonContent div .bio {
   position: absolute;
-  width: 30%;
+  width: 35%;
   top: 10%;
-  left: 60%;
+  left: 70%;
+  background: #222831;
+  color: #f5eded;
+  text-transform: capitalize;
+}
+
+.comparisonContent .bio span {
+  color: #ff5100;
 }
 
 .playerOne img, .playerTwo img {
@@ -409,4 +421,10 @@ fieldset {
 
 .scrollLeft, .scrollRight {
   margin: auto;
+}
+
+.comparisonStats .statKey {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }

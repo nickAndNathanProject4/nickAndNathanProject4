@@ -274,9 +274,9 @@ app.getNextGame = (teamID) => {
                 </div>
                 <h4>${app.opponentPlayersPositionMatch[0].FirstName} ${app.opponentPlayersPositionMatch[0].LastName}</h4>
                 <div class="bio">
-                <p>position: ${app.opponentPlayersPositionMatch[0].Position}</p>
-                <p>height: ${playerTwoHeightFeet}' ${playerTwoHeightInches}"</p>
-                <p>weight: ${app.opponentPlayersPositionMatch[0].Weight}lbs</p>
+                <p>position: <span>${app.opponentPlayersPositionMatch[0].Position}</span></p>
+                <p>height: <span>${playerTwoHeightFeet}' ${playerTwoHeightInches}"</span></p>
+                <p>weight: <span>${app.opponentPlayersPositionMatch[0].Weight}lbs</span></p>
                 </div>
             `)
 
@@ -309,6 +309,8 @@ let playerTwoSeasonStats;
 
 app.getPlayerComparison = function(){
     // $('#playerComparison').removeClass('visuallyhidden');
+    // const element = document.getElementById("playerComparison")
+    // element.scrollIntoView();
     $("#playerComparison").slideDown("slow");
     playerID = $(this).val();
 
@@ -324,9 +326,9 @@ app.getPlayerComparison = function(){
             </div>
             <h4>${playerOneBio.first_name} ${playerOneBio.last_name}</h4>
             <div class="bio">
-            <p>position: ${playerOneBio.position}</p>
-            <p>height: ${playerOneBio.height_feet}' ${playerOneBio.height_inches}"</p>
-            <p>weight: ${playerOneBio.weight_pounds}lbs</p>
+            <p>position: <span>${playerOneBio.position}</span></p>
+            <p>height: <span>${playerOneBio.height_feet}' ${playerOneBio.height_inches}"</span></p>
+            <p>weight: <span>${playerOneBio.weight_pounds}lbs</span></p>
             </div>
         `)
 
@@ -357,6 +359,28 @@ app.getPlayerComparison = function(){
             })
             playerOneSeasonStats = playerOneSeasonStats[0];
             console.log("player one season stats", playerOneSeasonStats);
+
+            let playerOnePts = app.seasonStatsAverages(playerOneSeasonStats.Points, playerOneSeasonStats.Games);
+
+
+            $('#comparisonStats .playerOneStats').append(`
+            <ul>
+            <li>${}</li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            </ul>
+            <div class="imageContainer">
+            <img src="${headshotURL}" alt="Photo of ${playerOneBio.first_name} ${playerOneBio.last_name}">
+            </div>
+            <h4>${playerOneBio.first_name} ${playerOneBio.last_name}</h4>
+            <div class="bio">
+            <p>position: <span>${playerOneBio.position}</span></p>
+            <p>height: <span>${playerOneBio.height_feet}' ${playerOneBio.height_inches}"</span></p>
+            <p>weight: <span>${playerOneBio.weight_pounds}lbs</span></p>
+            </div>
+        `)
         });
 
         app.getNextGame(playerOneBio.team_id);
@@ -364,7 +388,11 @@ app.getPlayerComparison = function(){
 };
 // =========================================================
 
+app.seasonStatsAverages = (statType, games) => {
+    return (statType / games)
+};
 
+app.statsKey = 
 
 
 // SEARCH RESULT SELECTION==============================
