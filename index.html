@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" type="image/png" href="./assets/favicon.png" />
     <link href="https://use.fontawesome.com/releases/v5.0.7/css/all.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Baskervville|Kanit:700|Special+Elite&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles/styles.css">
@@ -12,6 +13,7 @@
 </head>
 
 <body>
+    <!-- Header -->
     <header>
         <div class="headerOverlay">
 
@@ -20,24 +22,31 @@
 
     </header>
 
+
+    <!-- Welcome screen and app instructions -->
     <section class="welcomeInstructions">
         <div class="instructionsContent">
             <div id="closeHelp" class="closeHelp"><i class="fas fa-times-circle"></i></div>
             <h1>swish</h1>
-            <h2>welcome to swish! </h2>
-            <h3>your place for getting information on your fantasy player matchups</h3>
-            <p>Swish is an application which provides you the best information on upcoming matchups for your fantasy players and empowers you to make the winning choices!</p>
-            <ul>
-                <li>from the dashboard, search for your fantasy players and select your player from the search results</li>
-                <li>selected players will be added to your team and displayed on the dashboard</li>
-                <li>once you have entered players into your team, select any one of your players from the dashboard to be presented with the latests stats on their next upcoming opponent</li>
-            </ul>
-            <p>ready to start? either select begin to start building your own team or select demo to get a feel for Swish and what it can provide before you start</p>
-            <button id="begin">begin</button>
-            <button id="demo">demo</button>
+            <div class="wrapper">
+                <h2>welcome to swish! </h2>
+                <h3>your place for getting information on your fantasy player matchups</h3>
+                <p>swish is an application which provides you the best information on upcoming matchups for your fantasy players and empowers you to make the winning choices!</p>
+                <ul>
+                    <li><p>from the dashboard, search for your fantasy players and select your player from the search results</p></li>
+                    <li><p>selected players will be added to your team and displayed on the dashboard</p></li>
+                    <li><p>once you have entered players into your team, select any one of your players from the dashboard to be presented with the
+                    latests stats on their next upcoming opponent</p></li>
+                </ul>
+                <p>ready to start? either select begin to start building your own team or select demo to get a feel for Swish and what it can provide before you start</p>
+                <button id="begin">begin</button>
+                <button id="demo">demo</button>
+            </div>
         </div>
     </section>
 
+
+    <!-- Inputs for building fantasy team -->
     <fieldset>
         <legend>build your fantasy team</legend>
         <!-- Search field for player: -->
@@ -53,20 +62,22 @@
             <select name="userPlayers" id="playerSearchSelect">
                 <option value="players">choose a player:</option>
             </select>
+            <button id="addPlayer">add player</button>
         </div>
         
-        <button id="addPlayer">add player</button>
         <div id="helpIcon" class="helpIcon"><i class="fas fa-info-circle"></i></div>
     </fieldset>
 
 
-
-    <div id="teamGallery">
+    <!-- Team gallery -->
+    <div id="teamGallery" class="teamGallery visuallyhidden">
         <ul class="galleryList">
 
         </ul>
     </div>
 
+
+    <!-- Player comparison screen -->
     <section id="playerComparison" class="playerComparison">
         <h2>player comparison page</h2>
         <div class="comparisonContent">
@@ -85,13 +96,12 @@
             </div>
             <div class="statKey">
                 <ul>
-                    <li>pts</li>
-                    <li>reb</li>
-                    <li>ast</li>
-                    <li>stl</li>
-                    <li>blk</li>
+                    <li><p>pts</p></li>
+                    <li><p>reb</p></li>
+                    <li><p>ast</p></li>
+                    <li><p>stl</p></li>
+                    <li><p>blk</p></li>
                 </ul>
-
             </div>
             <div class="playerTwoStats">
 
@@ -99,6 +109,12 @@
         </div>
         <button id="dashboard">back to dashboard</button>
     </section>
+
+
+    <!-- Footer -->
+    <footer>
+        <p>N&#178 Production &#169 2019</p>
+    </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"> </script>
     <script src="./scripts/script.js"></script>

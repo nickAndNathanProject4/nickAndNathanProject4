@@ -148,10 +148,12 @@ $("#demo").on("click", function() {
 });
 
 $("#closeHelp").on("click", function() {
+    console.log("close click")
     $(".welcomeInstructions").toggleClass("visuallyhidden");
 });
 
 $("#helpIcon").on("click", function() {
+    console.log("help click")
     $(".welcomeInstructions").toggleClass("visuallyhidden");
 });
 
@@ -164,12 +166,23 @@ $("#dashboard").on("click", function() {
     $("#playerComparison").slideUp("slow");
     $(".comparisonContent").html(`
         <div class="scrollLeft"><i class="fas fa-chevron-left"></i></div>
-        <div id='playerOne' class="playerOne">
-        </div>
-        <div id='playerTwo' class="playerTwo">
-        </div>
+        <div id='playerOne' class="playerOne"></div>
+        <div id='playerTwo' class="playerTwo"></div>
         <div class="scrollRight"><i class="fas fa-chevron-right"></i></div>
         `)
+    $(".comparisonStats").html(`
+        <div class="playerOneStats"></div>
+        <div class="statKey">
+            <ul>
+                <li><p>pts</p></li>
+                <li><p>reb</p></li>
+                <li><p>ast</p></li>
+                <li><p>stl</p></li>
+                <li><p>blk</p></li>
+            </ul>
+        </div>
+        <div class="playerTwoStats"></div>
+    `)
 })
 // ===================================================================
 
@@ -240,19 +253,21 @@ app.getNextGame = (teamID) => {
         }
 
         // console.log("opponent team id", opponentTeamID);
-        // console.log("sdio opponent", sdioOpponentPlayers);
+        console.log("sdio opponent", sdioOpponentPlayers);
 
         const sdioReturn = app.getSDIOData(sdioOpponentPlayers);
         sdioReturn.then((result) => {
-            // console.log("array of opponent players", result)
+            console.log("array of opponent player obj", result)
 
             app.currentOpponentPlayers = result;
+
+            console.log("player one position", playerOneSeasonStats["Position"])
 
             app.opponentPlayersPositionMatch = app.currentOpponentPlayers.filter((playerObject) => {
                 return (playerObject["Position"] == playerOneSeasonStats["Position"] && playerObject["DepthChartOrder"] !== null);
             });
 
-            // console.log("array of opponent players with match pos", app.opponentPlayersPositionMatch);
+            console.log("array of opponent players with match pos", app.opponentPlayersPositionMatch);
 
             if (app.opponentPlayersPositionMatch.length > 1) {
                 app.opponentPlayersPositionMatch.sort((a, b) => (a.DepthChartOrder > b.DepthChartOrder) ? 1 : -1)
@@ -292,6 +307,26 @@ app.getNextGame = (teamID) => {
                 // })
                 // console.log("player one season stats", playerOneSeasonStats);
                 console.log("player two seasons stats api result", result);
+
+                playerTwoSeasonStats = result;
+
+                playerTwoStatAverages = app.statsKey.map((stat) => {
+                    // console.log("map avg", playerOneSeasonStats[stat])
+                    return app.seasonStatsAverages(playerTwoSeasonStats[stat], playerTwoSeasonStats.Games)
+                });
+
+                // console.log("player one stat avg", playerOneStatAverages)
+
+
+                $('#comparisonStats .playerTwoStats').append(`
+                <ul>
+                <li><p>${playerTwoStatAverages[0].toFixed(1)}</p></li>
+                <li><p>${playerTwoStatAverages[1].toFixed(1)}</p></li>
+                <li><p>${playerTwoStatAverages[2].toFixed(1)}</p></li>
+                <li><p>${playerTwoStatAverages[3].toFixed(1)}</p></li>
+                <li><p>${playerTwoStatAverages[4].toFixed(1)}</p></li>
+                </ul>
+            `)
             })
         });
     });
@@ -305,7 +340,16 @@ let playerOneBio;
 let playerTwoBio;
 let playerOneTeamAbbrev;
 let playerOneSeasonStats;
+let playerOneSeasonStats2;
 let playerTwoSeasonStats;
+let playerOneStatAverages;
+let playerTwoStatAverages;
+
+app.seasonStatsAverages = (statType, games) => {
+    // console.log(`avg func ${statType}`, statType, games)
+    return (statType / games);
+};
+app.statsKey = ["Points", "Rebounds", "Assists", "Steals", "BlockedShots"];
 
 app.getPlayerComparison = function(){
     // $('#playerComparison').removeClass('visuallyhidden');
@@ -358,41 +402,54 @@ app.getPlayerComparison = function(){
                 return playerObject["Name"] == playerOneFullName;
             })
             playerOneSeasonStats = playerOneSeasonStats[0];
-            console.log("player one season stats", playerOneSeasonStats);
+            // console.log("player one season stats", playerOneSeasonStats);
 
-            let playerOnePts = app.seasonStatsAverages(playerOneSeasonStats.Points, playerOneSeasonStats.Games);
+            // let playerOneGames = playerOneSeasonStats.Games
+            // console.log("player one games", playerOneGames)
+
+            // let playerOnePts = app.seasonStatsAverages(playerOneSeasonStats.Points, playerOneSeasonStats.Games);
+            // console.log("player one pts", playerOnePts)
+
+            const playerOneSeasonStatsByID = `stats/json/PlayerSeasonStatsByPlayer/2020/${playerOneSeasonStats.PlayerID}`;
+
+            app.getSDIOData(playerOneSeasonStatsByID).then( (result) => {
+                console.log("player one stat by id", result)
+
+                playerOneSeasonStats = result;
+                playerOneStatAverages = app.statsKey.map( (stat) => {
+                    // console.log("map avg", playerOneSeasonStats[stat])
+                    return app.seasonStatsAverages(playerOneSeasonStats[stat], playerOneSeasonStats.Games)
+                });
+    
+                // console.log("player one stat avg", playerOneStatAverages)
+    
+    
+                $('#comparisonStats .playerOneStats').append(`
+                    <ul>
+                    <li><p>${playerOneStatAverages[0].toFixed(1)}</p></li>
+                    <li><p>${playerOneStatAverages[1].toFixed(1)}</p></li>
+                    <li><p>${playerOneStatAverages[2].toFixed(1)}</p></li>
+                    <li><p>${playerOneStatAverages[3].toFixed(1)}</p></li>
+                    <li><p>${playerOneStatAverages[4].toFixed(1)}</p></li>
+                    </ul>
+                `)
+            })
 
 
-            $('#comparisonStats .playerOneStats').append(`
-            <ul>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            </ul>
-            <div class="imageContainer">
-            <img src="${headshotURL}" alt="Photo of ${playerOneBio.first_name} ${playerOneBio.last_name}">
-            </div>
-            <h4>${playerOneBio.first_name} ${playerOneBio.last_name}</h4>
-            <div class="bio">
-            <p>position: <span>${playerOneBio.position}</span></p>
-            <p>height: <span>${playerOneBio.height_feet}' ${playerOneBio.height_inches}"</span></p>
-            <p>weight: <span>${playerOneBio.weight_pounds}lbs</span></p>
-            </div>
-        `)
+
         });
-
+        console.log("player one bio teamid", playerOneBio.team_id)
         app.getNextGame(playerOneBio.team_id);
     });
 };
 // =========================================================
 
-app.seasonStatsAverages = (statType, games) => {
-    return (statType / games)
-};
+// app.seasonStatsAverages = (statType, games) => {
+//     console.log("avg func", statType, games)
+//     return (statType / games);
+// };
 
-app.statsKey = ["Games", "Points", "Rebounds", "Assists", "Steals", "BlockedShots"];
+// app.statsKey = ["Points", "Rebounds", "Assists", "Steals", "BlockedShots"];
 
 
 // SEARCH RESULT SELECTION==============================
@@ -413,6 +470,7 @@ app.getPlayerSelectValue = () => {
 let playerBio;
 let listTracker=1;
 app.displayTeam = () => {
+    $("#teamGallery").toggleClass("visuallyhidden");
     $("#teamGallery ul").empty();
     // console.log("fantasy team array", app.fantasyTeam);
     app.fantasyTeam.forEach((player) => {
@@ -443,7 +501,7 @@ app.displayTeam = () => {
             <div class="cardFront">
             <img src="${headshotURL}" alt="Photo of ${playerBio.first_name} ${playerBio.last_name}">
             <div class="bio">
-            <p>${playerBio.first_name} ${playerBio.last_name}</p>
+            <h4>${playerBio.first_name} ${playerBio.last_name}</h4>
             <p>position: ${playerBio.position}</p>
             <p>height: ${playerBio.height_feet}' ${playerBio.height_inches}"</p>
             <p>weight: ${playerBio.weight_pounds}lbs</p>
